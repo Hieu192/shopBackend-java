@@ -16,13 +16,11 @@ public interface UserService {
 
     Page<User> findAllUser(String keyword, Pageable pageable);
 
-    void resetPassword(Long userId, String newPassword, String checkPassword);
+    void resetPassword(Long userId, String newPassword);
 
     User getUserDetailsFromToken(String token);
 
     LoginResponse refreshToken (String refreshToken);
 
-    // LoginResponse refreshToken (RefreshTokenDTO refreshTokenDTO);
-
-    void isBlock(Long userId, Boolean active);
+    void isBlockOrEnable(Long userId, Boolean active);
 }

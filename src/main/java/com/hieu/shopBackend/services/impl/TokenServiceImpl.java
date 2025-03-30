@@ -1,10 +1,12 @@
 package com.hieu.shopBackend.services.impl;
 
+import com.hieu.shopBackend.exceptions.payload.DataNotFoundException;
 import com.hieu.shopBackend.models.Token;
 import com.hieu.shopBackend.models.User;
 import com.hieu.shopBackend.repositories.TokenRepository;
 import com.hieu.shopBackend.repositories.UserRepository;
 import com.hieu.shopBackend.services.TokenService;
+import com.hieu.shopBackend.utils.MessageKeys;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,5 +65,17 @@ public class TokenServiceImpl  implements TokenService {
 
 
         return newToken;
+    }
+
+    public Token verifyRefreshToken(String refreshToken) {
+        Token token = tokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new DataNotFoundException(MessageKeys.NOT_FOUND));
+
+        if (token.getExpirationTime().compareTo(Instant.now()) < 0) {
+            tokenRepository.delete(token);
+            throw new RuntimeException("Refresh token expired");
+        }
+
+        return token;
     }
 }
