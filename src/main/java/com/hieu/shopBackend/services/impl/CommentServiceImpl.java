@@ -1,4 +1,6 @@
 package com.hieu.shopBackend.services.impl;
 
-public class CommentServiceImpl {
+import com.hieu.shopBackend.services.CommentService;
+
+public class CommentServiceImpl implements CommentService {
 }

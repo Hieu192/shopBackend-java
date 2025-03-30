@@ -1,4 +1,7 @@
 package com.hieu.shopBackend.services.impl;
 
-public class CategoryServiceImpl {
+import com.hieu.shopBackend.services.CategoryService;
+
+public class CategoryServiceImpl implements CategoryService {
+
 }

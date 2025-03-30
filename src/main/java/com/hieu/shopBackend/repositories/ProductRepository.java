@@ -1,4 +1,7 @@
 package com.hieu.shopBackend.repositories;
 
-public class ProductRepository {
+import com.hieu.shopBackend.models.Product;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ProductRepository extends JpaRepository<Product, Long> {
 }

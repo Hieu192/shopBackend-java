@@ -1,4 +1,6 @@
 package com.hieu.shopBackend.services.impl;
 
-public class ProductImageService {
+import com.hieu.shopBackend.services.ProductImageService;
+
+public class ProductImageServiceImpl implements ProductImageService {
 }
