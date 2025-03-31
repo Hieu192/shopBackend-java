@@ -34,7 +34,8 @@ public class TokenServiceImpl  implements TokenService {
     @Override
     public Token addTokenAndRefreshToken(User user, String token, boolean isMobile) {
         List<Token> userTokens = tokenRepository.findByUser(user);
-        System.out.println("token 1::" + userTokens);
+        System.out.println("token 1::" + token);
+        System.out.println("token user ::" + userTokens);
 
         int tokenCount = userTokens.size();
         if (tokenCount >= MAX_TOKENS) {
@@ -63,8 +64,13 @@ public class TokenServiceImpl  implements TokenService {
                 .isMobile(isMobile)
                 .build();
 
+        System.out.println("token 2::" + newToken);
+        return tokenRepository.save(newToken);
+    }
 
-        return newToken;
+    @Override
+    public List<Token> tokens() {
+        return tokenRepository.findAll();
     }
 
     public Token verifyRefreshToken(String refreshToken) {

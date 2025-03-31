@@ -43,7 +43,7 @@ public class Token {
     @Column(name = "is_mobile")
     private boolean isMobile;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 }

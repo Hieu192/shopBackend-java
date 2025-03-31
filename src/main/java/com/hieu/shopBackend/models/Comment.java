@@ -10,7 +10,7 @@ import lombok.*;
 @Setter
 @Builder
 @Table(name = "comments")
-public class Comment {
+public class Comment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

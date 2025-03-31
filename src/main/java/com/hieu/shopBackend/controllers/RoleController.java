@@ -2,7 +2,6 @@ package com.hieu.shopBackend.controllers;
 
 import com.hieu.shopBackend.dtos.requests.role.RoleCreateRequest;
 import com.hieu.shopBackend.dtos.responses.ApiResponse;
-import com.hieu.shopBackend.dtos.responses.user.UserRegisterResponse;
 import com.hieu.shopBackend.models.Role;
 import com.hieu.shopBackend.services.RoleService;
 import com.hieu.shopBackend.utils.MessageKeys;

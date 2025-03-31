@@ -11,7 +11,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRegisterResponse {
+public class UserResponse {
 
     private Long id;
 
@@ -33,8 +33,8 @@ public class UserRegisterResponse {
 
     private Role role;
 
-    public static UserRegisterResponse fromUser(User user) {
-        return UserRegisterResponse.builder()
+    public static UserResponse fromUser(User user) {
+        return UserResponse.builder()
                 .id(user.getId())
                 .fullName(user.getFullName())
                 .phoneNumber(user.getPhoneNumber())
@@ -42,8 +42,8 @@ public class UserRegisterResponse {
                 .password(user.getPassword())
                 .active(user.isActive())
                 .dateOfBirth(user.getDateOfBirth())
-//                .facebookAccountId(user.getFacebookAccountId())
-//                .googleAccountId(user.getGoogleAccountId())
+                .facebookAccountId(user.getFacebookAccountId())
+                .googleAccountId(user.getGoogleAccountId())
                 .role(user.getRole())
                 .build();
     }

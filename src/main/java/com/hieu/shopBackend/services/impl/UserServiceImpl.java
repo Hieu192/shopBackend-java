@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
     private final TokenRepository tokenRepository;
-    private final TokenServiceImpl tokenService;
+    private final TokenService tokenService;
 
     @Override
     public User createUser(UserCreateRequest userCreateRequest) {
@@ -128,6 +128,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<User> findAllUser(String keyword, Pageable pageable) {
+        System.out.println("findAllUser::"+ keyword);
         return userRepository.findAllByKeyword(keyword, pageable);
     }
 

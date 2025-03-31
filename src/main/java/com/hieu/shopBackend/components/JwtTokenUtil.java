@@ -18,6 +18,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Slf4j
@@ -40,6 +41,8 @@ public class JwtTokenUtil {
 
     public String generateToken(Map<String, Object> extractClaims, UserDetails userDetails) {
         try {
+            System.out.println("test vip::" + new Date(System.currentTimeMillis()));
+            extractClaims.put("jti", UUID.randomUUID().toString());
             return Jwts
                     .builder()
                     .setClaims(extractClaims)

@@ -9,7 +9,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserUpdateRequest {
-    @JsonProperty("fullname")
+    @JsonProperty("full_name")
     private String fullName;
 
     @JsonProperty("phone_number")
@@ -18,10 +18,6 @@ public class UserUpdateRequest {
     private String address;
 
     private String updatePassword;
-
-//    private String retryUpdatePassword;
-//
-//    private String checkPassword;
 
     @JsonProperty("date_of_birth")
     private Date dateOfBirth;

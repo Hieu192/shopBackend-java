@@ -2,9 +2,11 @@ package com.hieu.shopBackend.exceptions;
 
 import com.hieu.shopBackend.dtos.responses.ApiResponse;
 import com.hieu.shopBackend.exceptions.payload.DataNotFoundException;
+import com.hieu.shopBackend.exceptions.payload.InvalidParamException;
 import com.hieu.shopBackend.utils.MessageKeys;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
     @ExceptionHandler(value = {
             DataNotFoundException.class,
+            InvalidParamException.class
     })
     public ResponseEntity<ApiResponse> handleSpecificExceptions(Exception e) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -21,6 +24,9 @@ public class GlobalExceptionHandler {
 
         if (e instanceof DataNotFoundException) {
             status = HttpStatus.NOT_FOUND;
+            detail = e.getMessage();
+        } else if (e instanceof InvalidParamException) {
+            status = HttpStatus.BAD_REQUEST;
             detail = e.getMessage();
         }
 
@@ -31,7 +37,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = Exception.class)
-    ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException exception) {
+    ResponseEntity<ApiResponse> handlingRuntimeException(Exception  exception) {
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.setMessage(String.valueOf(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode()));
         apiResponse.setError(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
@@ -67,15 +73,15 @@ public class GlobalExceptionHandler {
         apiResponse.setMessage(errorCode.getMessage());
         return ResponseEntity.badRequest().body(apiResponse);
     }
-//    @ExceptionHandler(value = AccessDeniedException.class)
-//    ResponseEntity<ApiResponse> handlingAccessDeniedException(AccessDeniedException exception) {
-//        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
-//
-//        return ResponseEntity.status(errorCode.getStatusCode())
-//                .body(ApiResponse.builder()
-//                        .code(errorCode.getCode())
-//                        .message(errorCode.getMessage())
-//                        .build());
-//    }
+    @ExceptionHandler(value = AccessDeniedException.class)
+    ResponseEntity<ApiResponse> handlingAccessDeniedException(AccessDeniedException exception) {
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+
+        return ResponseEntity.status(errorCode.getStatusCode())
+                .body(ApiResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build());
+    }
 
 }
