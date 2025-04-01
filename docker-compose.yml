@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  # mysql
+  mysql8-container:
+    container_name: mysql8-container
+    image: mysql:${MYSQL_TAG}
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "${MYSQL_PORT}:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+    networks:
+      - shop-network
+
+  # redis
+  redis-container:
+    container_name: redis-container
+    image: redis:${REDIS_TAG}
+    restart: always
+    ports:
+      - "${REDIS_PORT}:6379"
+    networks:
+      - shop-network
+
+
+# network
+networks:
+  shopapp-network:
+    name: shop-network
+    driver: bridge
