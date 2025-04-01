@@ -31,6 +31,6 @@ services:
 
 # network
 networks:
-  shopapp-network:
+  shop-network:
     name: shop-network
     driver: bridge
