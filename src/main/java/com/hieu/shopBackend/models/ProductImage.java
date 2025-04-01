@@ -7,8 +7,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Data
 @Builder
 @Table(name = "productImages")
 public class ProductImage {
@@ -23,5 +22,6 @@ public class ProductImage {
     @JsonBackReference // @JsonIgnore cũng đc
     private Product product;
 
+    @Column(name = "image_url", length = 300)
     private String imageUrl;
 }

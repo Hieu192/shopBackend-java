@@ -43,7 +43,7 @@ public class ProductController {
     private final ProductService productService;
     private final ProductRedisService productRedisService;
 
-    @PutMapping("")
+    @PostMapping("")
     public ResponseEntity<?> createProduct(@RequestBody ProductCreateRequest productCreateRequest) {
         Product newProduct = productService.createProduct(productCreateRequest);
         return ResponseEntity.ok(
@@ -54,14 +54,23 @@ public class ProductController {
         );
     }
 
+    @PostMapping(value = "/upload/test")
+    public ResponseEntity<String> testUpload(@RequestParam("files") List<MultipartFile> files) {
+        System.out.println("hello test upload");
+        // Bạn có thể in ra số lượng file nhận được để kiểm tra
+        System.out.println("Số file nhận được: " + files.size());
+        return ResponseEntity.ok("Test OK");
+    }
+
+
     @PostMapping(
             value = "/uploads/{id}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     public ResponseEntity<?> uploadImages(
             @PathVariable("id") Long productId,
-            @ModelAttribute("files") List<MultipartFile> files
-    ) {
+            @RequestParam("files") List<MultipartFile> files
+    ) throws IOException {
         //1. Nhận ID sản phẩm và danh sách file từ request.
         //2. Kiểm tra xem sản phẩm có tồn tại không.
         //3. Kiểm tra số lượng file có vượt quá giới hạn không.
@@ -69,51 +78,51 @@ public class ProductController {
         //5. Lưu file vào server hoặc cloud.
         //6. Lưu đường dẫn vào database.
         //7. Trả về danh sách ảnh đã lưu hoặc thông báo lỗi nếu có vấn đề.
-        try {
-            Product existsProduct = productService.getProductById(productId);
-            files = (files == null) ? new ArrayList<>() : files;
-            if (files.size() > ProductImage.MAXIMUM_IMAGES_PER_PRODUCT) {
-                return ResponseEntity.badRequest().body(ApiResponse.builder()
-                        .error(MessageKeys.FILES_REQUIRED).build());
-            }
-
-            List<ProductImage> productImages = new ArrayList<>();
-            for (MultipartFile file : files) {
-                if (file.getSize() == 0) {
-                    continue;
-                }
-
-                // Kiểm tra kích thước và định dạng file
-                if (file.getSize() > 10 * 1024 * 1024) { // kích thước lớn hơn 10MB
-                    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(
-                            ApiResponse.builder().error(MessageKeys.FILES_IMAGES_SIZE_FAILED).build()
-                    );
-                }
-
-                String contentType = file.getContentType();
-                if (contentType == null || !contentType.startsWith("image/")) {
-                    return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                            .body(ApiResponse.builder().error(MessageKeys.FILES_IMAGES_TYPE_FAILED).build());
-                }
-
-                // lưu file và cập nhật thumnail trong DTO
-                String fileName = storeFile(file);
-                // lưu vào đối tượng product trong DB ->
-                ProductImage productImage = productService.createProductImage(
-                        existsProduct.getId(),
-                        ProductImageRequest.builder().imageUrl(fileName).build()
-                );
-                productImages.add(productImage);
-            }
-
-            return ResponseEntity.ok(ApiResponse.builder().success(true)
-                    .message(MessageKeys.FILES_IMAGES_SUCCESS)
-                    .result(productImages));
-        } catch (Exception e) {
+        Product existsProduct = productService.getProductById(productId);
+        System.out.println("hello upload 1");
+        files = (files == null) ? new ArrayList<>() : files;
+        System.out.println("hello upload 1 dd" + files);
+        if (files.size() > ProductImage.MAXIMUM_IMAGES_PER_PRODUCT) {
             return ResponseEntity.badRequest().body(ApiResponse.builder()
-                    .message(MessageKeys.FILES_IMAGES_FAILED)
-                    .error(e.getMessage()).build());
+                    .error(MessageKeys.FILES_REQUIRED).build());
         }
+        System.out.println("hello upload2");
+        List<ProductImage> productImages = new ArrayList<>();
+        for (MultipartFile file : files) {
+            if (file.getSize() == 0) {
+                continue;
+            }
+            System.out.println("hello upload 3");
+            // Kiểm tra kích thước và định dạng file
+            if (file.getSize() > 10 * 1024 * 1024) { // kích thước lớn hơn 10MB
+                return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(
+                        ApiResponse.builder().error(MessageKeys.FILES_IMAGES_SIZE_FAILED).build()
+                );
+            }
+
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                        .body(ApiResponse.builder().error(MessageKeys.FILES_IMAGES_TYPE_FAILED).build());
+            }
+            System.out.println("hello upload 4");
+            // lưu file và cập nhật thumnail trong DTO
+            String fileName = storeFile(file);
+            // lưu vào đối tượng product trong DB ->
+            ProductImage productImage = productService.createProductImage(
+                    existsProduct.getId(),
+                    ProductImageRequest.builder().imageUrl(fileName).build()
+            );
+            productImages.add(productImage);
+        }
+        System.out.println("hello upload 5" + productImages);
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .success(true)
+                        .message(MessageKeys.FILES_IMAGES_SUCCESS)
+                        .result(productImages)
+                        .build()
+        );
     }
 
     @GetMapping("/images/{image-name}")
