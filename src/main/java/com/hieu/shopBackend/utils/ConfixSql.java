@@ -21,4 +21,10 @@ public class ConfixSql {
                 "OR u.phoneNumber LIKE CONCAT('%', :keyword, '%')) " +
                 "AND LOWER(u.role.name) = 'user'";
     }
+    public interface Order {
+        // lẩy ra tất cả các order
+        String GET_ALL_ORDER = "SELECT o FROM Order o WHERE " +
+                "(:keyword IS NULL OR :keyword = '' OR o.fullName LIKE %:keyword% OR o.address LIKE %:keyword% " +
+                "OR o.note LIKE %:keyword%)";
+    }
 }
