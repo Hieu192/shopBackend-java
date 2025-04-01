@@ -5,11 +5,13 @@ server:
 spring:
   application:
     name: shopBackend
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/shopbackend1
     username: root
     password: 123456
+
   jpa:
     database: mysql
     show-sql: true
@@ -19,6 +21,11 @@ spring:
       hibernate:
         format_sql: true
         use_sql_comments: true
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6380}
 
 jwt:
   expiration: 2592000 # 30 days = 30 * 24 * 60 * 60

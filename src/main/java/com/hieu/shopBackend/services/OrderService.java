@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
-public class OrderService {
+public interface OrderService {
 //    Order createOrder(OrderDTO orderDTO) throws Exception;
 //
 //    Order getOrderById(Long id);

@@ -1,4 +1,4 @@
 package com.hieu.shopBackend.services;
 
-public class OrderDetailService {
+public interface OrderDetailService {
 }
