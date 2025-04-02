@@ -22,6 +22,7 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("")
     public ResponseEntity<?> createCategory(@RequestBody @Valid CategoryRequest categoryRequest) {
         try {
@@ -49,6 +50,7 @@ public class CategoryController {
                 .build());
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCategories(@PathVariable("id") Long id,
                                               @RequestBody CategoryRequest categoryRequest) {
@@ -59,6 +61,7 @@ public class CategoryController {
                 .build());
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable("id") Long id) {
         try {

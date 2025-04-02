@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -30,10 +31,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import com.github.javafaker.Faker;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -43,6 +44,7 @@ public class ProductController {
     private final ProductService productService;
     private final ProductRedisService productRedisService;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("")
     public ResponseEntity<?> createProduct(@RequestBody ProductCreateRequest productCreateRequest) {
         Product newProduct = productService.createProduct(productCreateRequest);
@@ -54,6 +56,7 @@ public class ProductController {
         );
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/upload/test")
     public ResponseEntity<String> testUpload(@RequestParam("files") List<MultipartFile> files) {
         System.out.println("hello test upload");
@@ -62,7 +65,7 @@ public class ProductController {
         return ResponseEntity.ok("Test OK");
     }
 
-
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(
             value = "/uploads/{id}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
@@ -188,6 +191,108 @@ public class ProductController {
                 .isLast(productPage.isLast())
                 .totalPages(productPage.getTotalPages())
                 .build());
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_USER')")
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getProductById(@PathVariable("id") Long id) {
+        try {
+            Product existsProducts = productService.getProductById(id);
+            return ResponseEntity.ok(ApiResponse.builder().success(true)
+                    .result(ProductResponse.fromProduct(existsProducts)).build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder()
+                    .message(MessageKeys.GET_INFORMATION_FAILED)
+                    .error(e.getMessage()).build()
+            );
+        }
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_USER')")
+    @GetMapping("/details")
+    public ResponseEntity<?> getProductDetailsById(@RequestParam("id") Long id) {
+        try {
+            Product existsProducts = productService.getDetailProducts(id);
+            return ResponseEntity.ok(ApiResponse.builder().success(true).result(existsProducts).build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder()
+                    .message(MessageKeys.GET_INFORMATION_FAILED)
+                    .error(e.getMessage()).build());
+        }
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_USER')")
+    @GetMapping("/by-ids")
+    public ResponseEntity<?> getProductsByIds(@RequestParam("ids") String ids) {
+        try {
+            // tách ids thành mảng các số nguyên
+            List<Long> productIds = Arrays.stream(ids.split(","))
+                    .map(Long::parseLong)
+                    .collect(Collectors.toList());
+            List<Product> products = productService.findProductsByIds(productIds);
+            return ResponseEntity.ok(ApiResponse.builder().success(true).result(products).build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder()
+                    .message(MessageKeys.GET_INFORMATION_FAILED)
+                    .error(e.getMessage()).build());
+        }
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateProduct(@PathVariable("id") Long id,
+                                           @RequestBody ProductCreateRequest productCreateRequest
+    ) {
+        try {
+            Product updateProduct = productService.updateProduct(id, productCreateRequest);
+            return ResponseEntity.ok(ApiResponse.builder().success(true).result(updateProduct).build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder()
+                    .message(MessageKeys.MESSAGE_UPDATE_GET)
+                    .error(e.getMessage()).build());
+        }
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProductById(@PathVariable("id") Long id) {
+        try {
+            productService.deleteProduct(id);
+            return ResponseEntity.ok(ApiResponse.builder().success(true)
+                    .message(MessageKeys.MESSAGE_DELETE_SUCCESS + id).build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.builder()
+                            .message(MessageKeys.MESSAGE_DELETE_FAILED)
+                            .error(e.getMessage()).build()
+            );
+        }
+    }
+
+
+    // Tạo dữ liệu giả
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/generate-faceker-products")
+    public ResponseEntity<?> generateFacekerProducts() {
+        Faker faker = new Faker(new Locale("vi")); // new Locale("en")
+        for (int i = 0; i < 10000; i++) {
+            String productName = faker.commerce().productName();
+            if (productService.existsProduct(productName)) {
+                continue;
+            }
+            ProductCreateRequest productCreateRequest = ProductCreateRequest.builder()
+                    .name(productName)
+                    .price((float) faker.number().numberBetween(10, 90000000))
+                    .description(faker.lorem().sentence())
+                    .categoryId((long) faker.number().numberBetween(2, 7))
+                    .build();
+            try {
+                productService.createProduct(productCreateRequest);
+            } catch (Exception e) {
+                return ResponseEntity.badRequest().body(e.getMessage());
+            }
+        }
+        return ResponseEntity.ok("Fake product generated successfully");
     }
 
 

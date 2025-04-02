@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -83,11 +84,12 @@ public class UserController {
         return ResponseEntity.ok().body(apiResponse);
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @Transactional
     @PutMapping("/update/{userId}")
     public ResponseEntity<ApiResponse<?>> updateUser(
             @PathVariable Long userId,
             @RequestBody UserUpdateRequest userUpdateRequest) {
-        System.out.println("controller:" + userId);
         User user = userService.updateUser(userId, userUpdateRequest);
         return ResponseEntity.ok(ApiResponse.<UserResponse>builder()
                 .success(true)
@@ -96,6 +98,7 @@ public class UserController {
                 .build());
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/reset-password/{userId}")
     public ResponseEntity<ApiResponse<?>> resetPassword(@PathVariable("userId") Long userId) {
         System.out.println("controller");
@@ -108,6 +111,7 @@ public class UserController {
                 .build());
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("")
     public ResponseEntity<UserPageResponse> getUserByKeyword(
             @RequestParam(defaultValue = "", name = "keyword", required = false) String keyword,
@@ -130,6 +134,7 @@ public class UserController {
         );
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/block/{userId}/{active}")
     public ResponseEntity<ApiResponse<?>> blockOrEnable(
             @Valid @PathVariable("userId") long id,

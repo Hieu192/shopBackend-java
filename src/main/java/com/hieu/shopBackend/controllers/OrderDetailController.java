@@ -22,7 +22,7 @@ import java.util.List;
 public class OrderDetailController {
     private final OrderDetailService orderDetailService;
 
-
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("")
     public ResponseEntity<?> createOrderDetail(
             @Valid @RequestBody OrderDetailRequest orderDetailRequest
@@ -42,6 +42,7 @@ public class OrderDetailController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_USER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getOrderDetail(@Valid @PathVariable("id") Long id) throws Exception {
         OrderDetail orderDetail = orderDetailService.getOrderDetail(id);
@@ -49,7 +50,7 @@ public class OrderDetailController {
         // return ResponseEntity.ok(OrderDetailResponse.fromOrderDetail(orderDetail));
     }
 
-
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_USER')")
     @GetMapping("/order/{orderId}")
     public ResponseEntity<?> getOrderDetails(@Valid @PathVariable("orderId") Long orderId) {
         List<OrderDetailResponse> orderDetailResponses = orderDetailService.findByOrderId(orderId)
@@ -59,7 +60,7 @@ public class OrderDetailController {
         return ResponseEntity.ok(ApiResponse.builder().success(true).result(orderDetailResponses).build());
     }
 
-
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateOrderDetail(
             @Valid @RequestBody OrderDetailRequest orderDetailRequest,
@@ -73,6 +74,7 @@ public class OrderDetailController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteOrderDetail(@Valid @PathVariable("id") Long id) {
         try {
