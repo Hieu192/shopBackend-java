@@ -9,7 +9,7 @@
 - 📦 Quản lý sản phẩm và danh mục (Products & Categories)
 - 🛒 Giỏ hàng và đơn hàng (Cart & Orders)
 - 🧾 Bình luận sản phẩm (Comment)
-- 💳 Mã giảm giá (Coupon system)
+- 💳 Mã giảm giá (Discount system)
 - 📊 Vai trò và quyền hạn người dùng (Role-based Authorization)
 - 🗂 RESTful API theo chuẩn MVC
 
@@ -53,3 +53,26 @@ shopBackend/
 │           ├── static/               # Tài nguyên tĩnh (ảnh, js, css...)
 │           ├── templates/            # Template dùng với Thymeleaf nếu có
 │           └── application.yaml      # File cấu hình chính (DB, JWT, port,...)
+```
+
+# ⚙️ Cài đặt và chạy
+
+```bash
+# 1. Clone dự án về máy
+git clone https://github.com/your-username/shopBackend.git
+cd shopBackend
+
+# 2. Cấu hình kết nối cơ sở dữ liệu trong file:
+#    src/main/resources/application.yaml
+
+# 3. Chạy ứng dụng (bằng terminal hoặc trong IDE)
+./mvnw spring-boot:run
+
+# Hoặc nếu đã cài Maven toàn cục:
+mvn spring-boot:run
+```
+
+📌 **Lưu ý:**
+- Yêu cầu: Java 17+, Maven 3+, MySQL (hoặc MariaDB)
+- Đảm bảo đã khởi tạo DB trống trước khi chạy ứng dụng.
+
