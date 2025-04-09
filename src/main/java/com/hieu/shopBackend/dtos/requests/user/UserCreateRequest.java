@@ -16,12 +16,12 @@ import java.util.Date;
 public class UserCreateRequest {
     private String fullName;
 
-    @NotBlank(message = MessageKeys.PHONE_NUMBER_REQUIRED)
+    @NotBlank(message = "PHONE_NUMBER_REQUIRED")
     private String phoneNumber;
 
     private String address;
 
-    @NotBlank(message = MessageKeys.PASSWORD_REQUIRED)
+    @NotBlank(message = "PASSWORD_REQUIRED")
     private String password;
 
     private String retypePassword;
@@ -32,6 +32,6 @@ public class UserCreateRequest {
 
     private int googleAccountId;
 
-    @NotNull(message = MessageKeys.ROLE_ID_REQUIRED)
+    @NotNull(message = "ROLE_ID_REQUIRED")
     private Long roleId;
 }

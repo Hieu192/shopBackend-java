@@ -6,6 +6,6 @@ import lombok.Data;
 
 @Data
 public class RoleCreateRequest {
-    @NotBlank(message = MessageKeys.ROLE_REQUIRED)
+    @NotBlank(message = "ROLE_REQUIRED")
     private String name;
 }

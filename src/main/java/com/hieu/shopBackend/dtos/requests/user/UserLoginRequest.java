@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserLoginRequest {
     @JsonProperty("phone_number")
-    @NotBlank(message = MessageKeys.PHONE_NUMBER_REQUIRED)
+    @NotBlank(message = "PHONE_NUMBER_REQUIRED")
     private String phoneNumber;
 
-    @NotBlank(message = MessageKeys.PASSWORD_REQUIRED)
+    @NotBlank(message = "PASSWORD_REQUIRED")
     private String password;
 }

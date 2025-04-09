@@ -39,9 +39,14 @@ public class JwtTokenUtil {
         return generateToken(new HashMap<>(), userDetails);
     }
 
+    /**
+     * Thêm claim jti là UUID, đặt subject, IssuedAt, Expiration, ký token bằng hàm HS256 và secretKey
+     * @param extractClaims
+     * @param userDetails
+     * @return
+     */
     public String generateToken(Map<String, Object> extractClaims, UserDetails userDetails) {
         try {
-            System.out.println("test vip::" + new Date(System.currentTimeMillis()));
             extractClaims.put("jti", UUID.randomUUID().toString());
             return Jwts
                     .builder()
@@ -59,16 +64,17 @@ public class JwtTokenUtil {
 
     // decode and get the key
     private Key getSignInKey() {
-        // decode SECRET_KEY
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    // Tách toàn bộ claims ra khỏi token
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
+    // Giải mã token và trả về body
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSignInKey())
@@ -78,6 +84,13 @@ public class JwtTokenUtil {
     }
 
     // if token is valid by checking if token is expired for current user
+
+    /**
+     * check token có tồn tại trong db hay không
+     * Token đã bị thu hồi chưa
+     * Người dùng có hoạt động chưa (isActive)
+     * Token còn hạn không và có khớp với username hay không
+     */
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String phoneNumber = extractPhoneNumber(token);
         Token existingToken = tokenRepository.findByToken(token);
@@ -104,6 +117,4 @@ public class JwtTokenUtil {
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
-
-
 }
